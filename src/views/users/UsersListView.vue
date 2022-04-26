@@ -51,7 +51,6 @@ export default defineComponent({
             store.dispatch("getAllUsers")
                 .then(response => {
                     userList.value = response.data
-                    console.log('user list', userList.value)
                 })
             
         })

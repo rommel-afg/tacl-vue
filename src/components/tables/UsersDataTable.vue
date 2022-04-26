@@ -6,6 +6,8 @@
                 <option value="delete">Delete</option>
                 <option value="deactivate">Deactivate</option>
             </select>
+            <span class="grow"></span>
+            <input v-model="searchString" class="px-2 py-1 border border-solid border-gray-200 w-64" type="text" placeholder="Search" />
         </div>
         <table class="w-full text-sm text-left text-gray-500 my-3">
             <thead class="text-xs text-gray-50 uppercase bg-emerald-800">
@@ -108,6 +110,9 @@ export default defineComponent({
         tableBody: Array
     },
     setup(props){
+        // search
+        const searchString = ref("")
+
         // sort
         const sort = ref('asc')
         const sortedBy = ref("fullName")
@@ -118,6 +123,7 @@ export default defineComponent({
         const pageSize = ref(5) // data per page
         const startIndex = ref(0)
         const endIndex = ref(0)
+        const pageTotal = ref(0)
 
         const loadSpan = computed(() => {
             return props.isAction ? props.tableHeaders.length + 1: props.tableHeaders.length
@@ -143,17 +149,16 @@ export default defineComponent({
             return hold
         })
 
-        const pageTotal = computed(() => {
-            return Math.ceil(props.tableBody.length / pageSize.value);
-        })
-
         const paginate = (arr) => {
             let start = ( curPage.value - 1 ) * pageSize.value
             let end = start + pageSize.value
 
+            pageTotal.value = Math.ceil(arr.length / pageSize.value);
+
             let startPage = 0
             let endPage = 0
-            let maxPages = 5
+            let maxPages = 5 // max total of pagination buttons
+
             if (pageTotal.value <= maxPages) {
                 // total pages less than max so show all pages
                 startPage = 1;
@@ -185,7 +190,11 @@ export default defineComponent({
 
         const bodyData = computed(() => {
             let data = props.tableBody
+
             // filter data
+            data = data.filter(search => {
+                return search.fullName.toLowerCase().includes(searchString.value.toLowerCase())
+            })
 
             // sort data
             data = data.sort((a,b) => {
@@ -194,6 +203,8 @@ export default defineComponent({
                 else
                     return (b[sortedBy.value] > a[sortedBy.value]) ? 1 : ((a[sortedBy.value] > b[sortedBy.value]) ? -1 : 0)
             })
+
+            console.log("data", data)
             // paginate data
             let temp = paginate(data)
             data = temp;
@@ -241,7 +252,8 @@ export default defineComponent({
             pageTotal,
             pageClick,
             startIndex,
-            endIndex
+            endIndex,
+            searchString
         }
     }
 })
