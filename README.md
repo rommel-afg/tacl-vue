@@ -1,4 +1,4 @@
-# tacl-vue-tw
+# tacl-vue
 Made with pure javascript (Vue 3 + Tailwind CSS)
 
 ## Project setup
